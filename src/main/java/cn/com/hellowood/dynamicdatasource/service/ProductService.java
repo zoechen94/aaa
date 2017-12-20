@@ -1,8 +1,7 @@
 package cn.com.hellowood.dynamicdatasource.service;
 
-import cn.com.hellowood.dynamicdatasource.mapper.ProductMapper;
+import cn.com.hellowood.dynamicdatasource.mapper.ProductDao;
 import cn.com.hellowood.dynamicdatasource.modal.Product;
-import cn.com.hellowood.dynamicdatasource.utils.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,37 +19,37 @@ import java.util.List;
 public class ProductService {
 
     @Autowired
-    private ProductMapper productMapper;
+    private ProductDao productDao;
 
     /**
      * Get product by id
-     * If not found product will throw ServiceException
+     * If not found product will throw Exception
      *
      * @param productId
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
-    public Product select(long productId) throws ServiceException {
-        Product product = productMapper.select(productId);
+    public Product select(long productId) throws Exception {
+        Product product = productDao.select(productId);
         if (product == null) {
-            throw new ServiceException("Product:" + productId + " not found");
+            throw new Exception("Product:" + productId + " not found");
         }
         return product;
     }
 
     /**
      * Update product by id
-     * If update failed will throw ServiceException
+     * If update failed will throw Exception
      *
      * @param productId
      * @param newProduct
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
-    public Product update(long productId, Product newProduct) throws ServiceException {
+    public Product update(long productId, Product newProduct) throws Exception {
 
-        if (productMapper.update(newProduct) <= 0) {
-            throw new ServiceException("Update product:" + productId + "failed");
+        if (productDao.update(newProduct) <= 0) {
+            throw new Exception("Update product:" + productId + "failed");
         }
         return newProduct;
     }
@@ -60,12 +59,12 @@ public class ProductService {
      *
      * @param newProduct
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
-    public boolean add(Product newProduct) throws ServiceException {
-        Integer num = productMapper.insert(newProduct);
+    public boolean add(Product newProduct) throws Exception {
+        Integer num = productDao.insert(newProduct);
         if (num <= 0) {
-            throw new ServiceException("Add product failed");
+            throw new Exception("Add product failed");
         }
         return true;
     }
@@ -75,12 +74,12 @@ public class ProductService {
      *
      * @param productId
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
-    public boolean delete(long productId) throws ServiceException {
-        Integer num = productMapper.delete(productId);
+    public boolean delete(long productId) throws Exception {
+        Integer num = productDao.delete(productId);
         if (num <= 0) {
-            throw new ServiceException("Delete product:" + productId + "failed");
+            throw new Exception("Delete product:" + productId + "failed");
         }
         return true;
     }
@@ -91,6 +90,6 @@ public class ProductService {
      * @return
      */
     public List<Product> selectAll() {
-        return productMapper.selectAll();
+        return productDao.selectAll();
     }
 }

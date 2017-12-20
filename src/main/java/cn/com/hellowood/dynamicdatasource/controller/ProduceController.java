@@ -1,13 +1,12 @@
 package cn.com.hellowood.dynamicdatasource.controller;
 
-import cn.com.hellowood.dynamicdatasource.common.CommonResponse;
-import cn.com.hellowood.dynamicdatasource.common.ResponseUtil;
 import cn.com.hellowood.dynamicdatasource.configuration.TargetDataSource;
 import cn.com.hellowood.dynamicdatasource.modal.Product;
 import cn.com.hellowood.dynamicdatasource.service.ProductService;
-import cn.com.hellowood.dynamicdatasource.utils.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Product controller
@@ -29,24 +28,35 @@ public class ProduceController {
      *
      * @param productId
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
     @GetMapping("/{id}")
-    @TargetDataSource("slave")
-    public CommonResponse getProduct(@PathVariable("id") Long productId) throws ServiceException {
-        return ResponseUtil.generateResponse(productService.select(productId));
+    public Product getProduct(@PathVariable("id") Long productId) throws Exception {
+        return productService.select(productId);
     }
 
     /**
      * Get all product
      *
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
-    @GetMapping
+    @GetMapping("/master")
     @TargetDataSource("master")
-    public CommonResponse getAllProduct() throws ServiceException {
-        return ResponseUtil.generateResponse(productService.selectAll());
+    public List<Product> getAllMasterProduct() {
+        return productService.selectAll();
+    }
+
+    /**
+     * Get all product
+     *
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/slave")
+    @TargetDataSource("slave")
+    public List<Product> getAllSlaveProduct() {
+        return productService.selectAll();
     }
 
     /**
@@ -55,11 +65,11 @@ public class ProduceController {
      * @param productId
      * @param newProduct
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
     @PutMapping("/{id}")
-    public CommonResponse updateProduct(@PathVariable("id") Long productId, @RequestBody Product newProduct) throws ServiceException {
-        return ResponseUtil.generateResponse(productService.update(productId, newProduct));
+    public Product updateProduct(@PathVariable("id") Long productId, @RequestBody Product newProduct) throws Exception {
+        return productService.update(productId, newProduct);
     }
 
     /**
@@ -67,11 +77,11 @@ public class ProduceController {
      *
      * @param productId
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
     @DeleteMapping("/{id}")
-    public CommonResponse deleteProduct(@PathVariable("id") long productId) throws ServiceException {
-        return ResponseUtil.generateResponse(productService.delete(productId));
+    public boolean deleteProduct(@PathVariable("id") long productId) throws Exception {
+        return productService.delete(productId);
     }
 
     /**
@@ -79,10 +89,10 @@ public class ProduceController {
      *
      * @param newProduct
      * @return
-     * @throws ServiceException
+     * @throws Exception
      */
     @PostMapping
-    public CommonResponse addProduct(@RequestBody Product newProduct) throws ServiceException {
-        return ResponseUtil.generateResponse(productService.add(newProduct));
+    public boolean addProduct(@RequestBody Product newProduct) throws Exception {
+        return productService.add(newProduct);
     }
 }

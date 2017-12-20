@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 @Mapper
-public interface ProductMapper {
+public interface ProductDao {
     Product select(@Param("id") long id);
 
     Integer update(Product product);

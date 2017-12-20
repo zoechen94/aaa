@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class DataSourceConfigurer {
      * @return data source
      */
     @Bean("master")
+    @Primary
     @ConfigurationProperties(prefix = "application.server.db.master")
     public DataSource master() {
         return DataSourceBuilder.create().build();
