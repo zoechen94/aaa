@@ -1,16 +1,11 @@
 # Spring Boot 中使用 MyBatis 下实现多数据源动态切换，读写分离
----------------------
 
 > 项目地址：[https://github.com/helloworlde/SpringBoot-DynamicDataSource/tree/dev](https://github.com/helloworlde/SpringBoot-DynamicDataSource/tree/dev)
-
----------------------
 
 > 在 Spring Boot 应用中使用到了 MyBatis 作为持久层框架，添加多个数据源，实现读写分离，减少数据库的压力
 
 > 在这个项目中使用注解方式声明要使用的数据源，通过 AOP 查找注解，从而实现数据源的动态切换；该项目为 Product
 实现其 REST API 的 CRUD为例，使用最小化的配置实现动态数据源切换
-
----------------------
 
 > 动态切换数据源依赖 `configuration` 包下的5个类来实现，分别是：
 > - DataSourceRoutingDataSource.java
@@ -169,6 +164,17 @@ public class DataSourceConfigurer {
         // 配置数据源，此处配置为关键配置，如果没有将 dynamicDataSource 作为数据源则不能实现切换
         sqlSessionFactoryBean.setDataSource(dynamicDataSource());
         return sqlSessionFactoryBean;
+    }
+    
+    
+    /**
+     * 配置事务管理，如果使用到事务需要注入该 Bean，否则事务不会生效
+     * 在需要的地方加上 @Transactional 注解即可
+     * @return the platform transaction manager
+     */
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dynamicDataSource());
     }
 }
 
