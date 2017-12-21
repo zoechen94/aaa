@@ -1,4 +1,9 @@
 # Spring Boot 中使用 MyBatis 下实现多数据源动态切换，读写分离
+---------------------
+
+> 项目地址：[https://github.com/helloworlde/SpringBoot-DynamicDataSource/tree/dev](https://github.com/helloworlde/SpringBoot-DynamicDataSource/tree/dev)
+
+---------------------
 
 > 在 Spring Boot 应用中使用到了 MyBatis 作为持久层框架，添加多个数据源，实现读写分离，减少数据库的压力
 
@@ -19,10 +24,10 @@
 ## 创建数据库及表
 
 - 分别创建数据库`product_master` 和 `product_slave`
-- 在 `product_master` 和 `product_slave` 中分别创建表 `products`，并插入不同数据
+- 在 `product_master` 和 `product_slave` 中分别创建表 `product`，并插入不同数据
 
 ```sql
-    CREATE TABLE products(
+    CREATE TABLE product(
       id INT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(50) NOT NULL,
       price DOUBLE(10,2) NOT NULL DEFAULT 0
@@ -49,7 +54,7 @@ application.server.db.slave.port=3306
 application.server.db.slave.username=root
 application.server.db.slave.password=123456
 
-#MyBatis config
+# MyBatis config
 mybatis.type-aliases-package=cn.com.hellowood.dynamicdatasource.mapper
 mybatis.mapper-locations=mappers/**Mapper.xml
 ```
@@ -188,8 +193,8 @@ public class DynamicDataSourceContextHolder {
     private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>() {
         
         /**
-        * 将 master 数据源的 key 作为默认数据源的 key
-        */
+         * 将 master 数据源的 key 作为默认数据源的 key
+         */
         @Override
         protected String initialValue() {
             return "master";
@@ -370,8 +375,8 @@ public class ProduceController {
 - ProductDao.java
 - ProductMapper.xml
 
-> 启动项目，此时访问 `/product/master` 会返回 `product_master` 数据库中 `products` 表中的所有数据，
-访问 `/product/slave` 会返回 `product_slave` 数据库中 `products` 表中的数据，同时也可以在看到切换
+> 启动项目，此时访问 `/product/master` 会返回 `product_master` 数据库中 `product` 表中的所有数据，
+访问 `/product/slave` 会返回 `product_slave` 数据库中 `product` 表中的数据，同时也可以在看到切换
 数据源的 log，说明动态切换数据源是有效的
 
 ---------------
