@@ -1,11 +1,14 @@
 # Spring Boot 中使用 MyBatis 下实现多数据源动态切换，读写分离
 
 > 项目地址：[https://github.com/helloworlde/SpringBoot-DynamicDataSource/tree/dev](https://github.com/helloworlde/SpringBoot-DynamicDataSource/tree/dev)
+ 
+> 常见问题及解决方法 [https://github.com/helloworlde/SpringBoot-DynamicDataSource/blob/master/Issues.md](https://github.com/helloworlde/SpringBoot-DynamicDataSource/blob/master/Issues.md)
 
 > 在 Spring Boot 应用中使用到了 MyBatis 作为持久层框架，添加多个数据源，实现读写分离，减少数据库的压力
 
 > 在这个项目中使用注解方式声明要使用的数据源，通过 AOP 查找注解，从而实现数据源的动态切换；该项目为 Product
 实现其 REST API 的 CRUD为例，使用最小化的配置实现动态数据源切换
+
 
 > 动态切换数据源依赖 `configuration` 包下的5个类来实现，分别是：
 > - DataSourceRoutingDataSource.java
@@ -22,11 +25,25 @@
 - 在 `product_master` 和 `product_slave` 中分别创建表 `product`，并插入不同数据
 
 ```sql
-    CREATE TABLE product(
+    CREATE DATABASE IF NOT EXISTS product_master;
+    DROP TABLE IF EXISTS product;
+    CREATE TABLE product_master.product(
       id INT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(50) NOT NULL,
       price DOUBLE(10,2) NOT NULL DEFAULT 0
     );
+    INSERT product_master.product(name, price)
+    VALUES ("master", 1);
+    
+    CREATE DATABASE IF NOT EXISTS product_slave;
+    DROP TABLE IF EXISTS product;
+    CREATE TABLE product_slave.product(
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(50) NOT NULL,
+      price DOUBLE(10,2) NOT NULL DEFAULT 0
+    );
+    INSERT product_slave.product(name, price)
+    VALUES ("master", 1);
     
 ```
 
@@ -286,8 +303,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Aspect
-// 该切面应当先于 @Transactional 执行
-@Order(-1) 
 @Component
 public class DynamicDataSourceAspect {
     private static final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
