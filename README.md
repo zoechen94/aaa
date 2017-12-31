@@ -6,8 +6,7 @@
 
 > 在 Spring Boot 应用中使用到了 MyBatis 作为持久层框架，添加多个数据源，实现读写分离，减少数据库的压力
 
-> 在这个项目中使用注解方式声明要使用的数据源，通过 AOP 查找注解，从而实现数据源的动态切换；该项目为 Product
-实现其 REST API 的 CRUD为例，使用最小化的配置实现动态数据源切换
+> 在这个项目中使用注解方式声明要使用的数据源，通过 AOP 查找注解，从而实现数据源的动态切换；该项目为 Product实现其 REST API 的 CRUD为例，使用最小化的配置实现动态数据源切换
 
 
 > 动态切换数据源依赖 `configuration` 包下的5个类来实现，分别是：
@@ -75,8 +74,7 @@ mybatis.mapper-locations=mappers/**Mapper.xml
 
 - DataSourceRoutingDataSource.java
 
-> 该类继承自 `AbstractRoutingDataSource` 类，在访问数据库时会调用该类的 `determineCurrentLookupKey()` 
-方法获取数据库实例的 key
+> 该类继承自 `AbstractRoutingDataSource` 类，在访问数据库时会调用该类的 `determineCurrentLookupKey()` 方法获取数据库实例的 key
 
 ```java
 package cn.com.hellowood.dynamicdatasource.configuration;
@@ -396,15 +394,11 @@ public class ProduceController {
 - ProductDao.java
 - ProductMapper.xml
 
-> 启动项目，此时访问 `/product/master` 会返回 `product_master` 数据库中 `product` 表中的所有数据，
-访问 `/product/slave` 会返回 `product_slave` 数据库中 `product` 表中的数据，同时也可以在看到切换
-数据源的 log，说明动态切换数据源是有效的
+> 启动项目，此时访问 `/product/master` 会返回 `product_master` 数据库中 `product` 表中的所有数据，访问 `/product/slave` 会返回 `product_slave` 数据库中 `product` 表中的数据，同时也可以在看到切换数据源的 log，说明动态切换数据源是有效的
 
 ---------------
 
 > 在该项目中，`@TargetDataSource` 注解可用用于 `Controller` 和 `Service` 类中，用于持久层接口时无效
 
-> 在实际项目中如果使用注解的方式挨个标记并不是合理的方式，而且局限性太大，一个方法中可能既有查询又有写入，
-所以无法很好的实现读写分离；更好的方式是通过 AOP 切持久层接口，通过接口的方法名来判断应当使用哪种数据源，
-不过该方式要求使用统一的命名方式
+> 在实际项目中如果使用注解的方式挨个标记并不是合理的方式，而且局限性太大，一个方法中可能既有查询又有写入，所以无法很好的实现读写分离；更好的方式是通过 AOP 切持久层接口，通过接口的方法名来判断应当使用哪种数据源，不过该方式要求使用统一的命名方式
 
