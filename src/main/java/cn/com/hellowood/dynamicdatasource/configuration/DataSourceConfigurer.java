@@ -46,6 +46,12 @@ public class DataSourceConfigurer {
         return DataSourceBuilder.create().build();
     }
 
+    @Bean("third")
+    @ConfigurationProperties(prefix = "application.server.db.third")
+    public DataSource third() {
+        return DataSourceBuilder.create().build();
+    }
+
     /**
      * Dynamic data source.
      *
@@ -57,6 +63,7 @@ public class DataSourceConfigurer {
         Map<Object, Object> dataSourceMap = new HashMap<>(2);
         dataSourceMap.put("master", master());
         dataSourceMap.put("slave", slave());
+        dataSourceMap.put("third",third());
 
         // Set master datasource as default
         dynamicRoutingDataSource.setDefaultTargetDataSource(master());

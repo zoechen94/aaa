@@ -1,12 +1,20 @@
 package cn.com.hellowood.dynamicdatasource.service;
 
+import cn.com.hellowood.dynamicdatasource.configuration.DynamicDataSourceContextHolder;
+import cn.com.hellowood.dynamicdatasource.configuration.TargetDataSource;
 import cn.com.hellowood.dynamicdatasource.mapper.ProductDao;
+import cn.com.hellowood.dynamicdatasource.mapper.RoleDOMapper;
+import cn.com.hellowood.dynamicdatasource.mapper.TbDOMapper;
 import cn.com.hellowood.dynamicdatasource.modal.Product;
+import cn.com.hellowood.dynamicdatasource.modal.RoleDO;
+import cn.com.hellowood.dynamicdatasource.modal.TbDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Product service for handler logic of product operation
@@ -22,6 +30,12 @@ public class ProductService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private RoleDOMapper roleDOMapper;
+
+    @Autowired
+    private TbDOMapper tbDOMapper;
 
     /**
      * Get product by id
@@ -93,5 +107,46 @@ public class ProductService {
      */
     public List<Product> selectAll() {
         return productDao.selectAll();
+    }
+
+    public List<RoleDO>  listAllRoles(){
+        return roleDOMapper.listAll();
+    }
+
+    public List<TbDO> selectTbAll(){
+        return tbDOMapper.listAll();
+    }
+
+    public Map<String,Object> map(){
+        Map<String,Object> map=new HashMap<>();
+        DynamicDataSourceContextHolder.setDataSourceKey("third");
+        map.put("third",tbDOMapper.listAll());
+        DynamicDataSourceContextHolder.setDataSourceKey("master");
+        map.put("master",productDao.selectAll());
+        DynamicDataSourceContextHolder.setDataSourceKey("slave");
+        map.put("slave",roleDOMapper.listAll());
+        return map;
+    }
+
+    @TargetDataSource("third")
+    public Map<String,Object> map2(){
+        Map<String,Object> map=new HashMap<>();
+        map.put("third",tbDOMapper.listAll());
+        map.put("role",roleDOMapper.listAll());
+        map.put("master",productDao.selectAll());
+//        map=getSlave(getSlave(map));
+        return map;
+    }
+
+    @TargetDataSource("slave")
+    public Map<String, Object> getSlave(Map<String, Object> map) {
+        map.put("slave",roleDOMapper.listAll());
+        return map;
+    }
+
+    @TargetDataSource("master")
+    public Map<String, Object> getMaster(Map<String, Object> map) {
+        map.put("master",productDao.selectAll());
+        return map;
     }
 }

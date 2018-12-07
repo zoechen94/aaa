@@ -1,8 +1,10 @@
 package cn.com.hellowood.dynamicdatasource.mapper;
 
+import cn.com.hellowood.dynamicdatasource.configuration.TargetDataSource;
 import cn.com.hellowood.dynamicdatasource.modal.Product;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,5 +25,6 @@ public interface ProductDao {
 
     Integer delete(long productId);
 
+    @TargetDataSource("master")
     List<Product> selectAll();
 }
