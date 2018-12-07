@@ -14,7 +14,6 @@ import java.util.List;
  * @Email hellowoodes@gmail.com
  */
 
-@Mapper
 public interface ProductDao {
     Product select(@Param("id") long id);
 
